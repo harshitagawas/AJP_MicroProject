@@ -70,7 +70,7 @@ public class dashController {
     private ImageView closebtn;
 
     private String currentTask;  // Store the current task being worked on
-    private HashMap<String, Label> importantTasksMap = new HashMap<>();  // Store important tasks for easy removal
+    private HashMap<String, Label> importantTasksMap = new HashMap<>();  // Store important tasks for easy remove
     private HashMap<String, Label> completedTasksMap = new HashMap<>();
 
 
@@ -148,13 +148,13 @@ public class dashController {
         taskDetailPanel.setVisible(true);
         taskName.setText(task);
 
-        // Check if the task is already marked as important
+        // Check if the task is already marked  important
         impCheckbox.setSelected(importantTasksMap.containsKey(task));
-        // Check if the task is already marked as completed
+        // Check if the task is already marked  completed
         completedCheckbox.setSelected(completedTasksMap.containsKey(task));
     }
 
-    // Handle the Save button click from task detail panel
+    // Handle the Save buttonfrom task detail panel
     @FXML
     public void handleSave() {
         taskDetailPanel.setVisible(false);
@@ -214,7 +214,7 @@ public class dashController {
     public void removeFromImpPanel(String task) {
         Label impTaskLabel = importantTasksMap.get(task);
         if (impTaskLabel != null) {
-            impTaskContainer.getChildren().remove(impTaskLabel);  // Remove the task label from the VBox
+            impTaskContainer.getChildren().remove(impTaskLabel);
             importantTasksMap.remove(task);  // Remove the task from the important tasks map
         }
     }
@@ -258,40 +258,39 @@ public class dashController {
 
     @FXML
     public void signOut(){
-        // Create a confirmation alert
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Sign Out");
-        alert.setHeaderText(null); // Optional: no header
+        alert.setHeaderText(null);
         alert.setContentText("Are you sure you want to sign out?");
 
-        // Show the alert and wait for user response
+
         if (alert.showAndWait().get() == ButtonType.OK) {
-            // User clicked OK, proceed to sign out
+            // User clicked OK
             try {
-                // Get the current stage and close it
+
                 stage = (Stage) dashMain.getScene().getWindow();
                 stage.close();
 
-                // Load the sign-up page (assuming signup.fxml is the sign-up page)
+                // Load the sign-up pag
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("signup.fxml"));
                 Parent root = loader.load();
 
-                // Create a new stage for the sign-up page
                 Stage signUpStage = new Stage();
                 signUpStage.setTitle("Sign Up");
                 signUpStage.setScene(new Scene(root));
-                signUpStage.show(); // Show the new sign-up window
+                signUpStage.show(); // Show the new sign-up page
             } catch (IOException e) {
-                e.printStackTrace(); // Handle any potential loading errors
+                e.printStackTrace();
             }
         }
     }
 
     @FXML
     public void detailPanelClose() {
-        // Close the task detail panel when the close button is clicked
+
         closebtn.setOnMouseClicked(event -> {
-            taskDetailPanel.setVisible(false);  // Hide the panel
+            taskDetailPanel.setVisible(false);
         });
     }
 
