@@ -134,12 +134,12 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </CheckBox>
-                  <Button layoutX="111.0" layoutY="386.0" mnemonicParsing="false" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Delete Task" textFill="WHITE">
+                  <Button layoutX="104.0" layoutY="401.0" mnemonicParsing="false" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Delete Task" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="savebtn" layoutX="363.0" layoutY="382.0" mnemonicParsing="false" onAction="#handleSave" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Save Task" textFill="WHITE">
+                  <Button fx:id="savebtn" layoutX="364.0" layoutY="401.0" mnemonicParsing="false" onAction="#handleSave" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Save Task" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -157,6 +157,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
+                  <Pane layoutX="81.0" layoutY="345.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #b8d8e3; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane layoutX="158.0" layoutY="344.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #9db0ce; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane layoutX="239.0" layoutY="346.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #535878; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane layoutX="313.0" layoutY="346.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #f1b5b5; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane layoutX="385.0" layoutY="345.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #F28482; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane layoutX="463.0" layoutY="346.0" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #BB7B85; -fx-background-radius: 50; -fx-border-radius: 50;" />
                </children>
             </Pane>
          </children></Pane>
