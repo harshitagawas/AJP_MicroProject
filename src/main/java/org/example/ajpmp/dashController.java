@@ -3,22 +3,17 @@ package org.example.ajpmp;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.input.KeyCode;
-
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import java.io.IOException;
-
-
-
-
 import java.util.HashMap;
 
 public class dashController {
@@ -69,15 +64,25 @@ public class dashController {
     @FXML
     private ImageView closebtn;
 
-    private String currentTask;  // Store the current task being worked on
-    private HashMap<String, Label> importantTasksMap = new HashMap<>();  // Store important tasks for easy remove
-    private HashMap<String, Label> completedTasksMap = new HashMap<>();
-
+    @FXML
+    public Label taskLabel;
+    @FXML
+    public Label impTaskLabel;
+    @FXML
+    public Label compTaskLabel;
 
     @FXML
-    public void displayName(String username){
+    private Pane color1, color2, color3, color4, color5, color6;
+
+    private String currentTask;  // Store the current task being worked on
+    private HashMap<String, Label> importantTasksMap = new HashMap<>();  // Store important tasks for easy removal
+    private HashMap<String, Label> completedTasksMap = new HashMap<>();
+
+    @FXML
+    public void displayName(String username) {
         nameLabel.setText(username);
     }
+
     @FXML
     public void initialize() {
         tasksPanel.setVisible(false);
@@ -90,7 +95,6 @@ public class dashController {
                 addTasks();
             }
         });
-
     }
 
     @FXML
@@ -118,7 +122,7 @@ public class dashController {
     public void addTasks() {
         String task = taskip.getText();
         if (!task.isEmpty()) {
-            Label taskLabel = new Label(task);
+            taskLabel = new Label(task);
             taskLabel.setStyle(
                     "-fx-font-size: 14px; " +
                             "-fx-font-weight: bold; " +
@@ -127,10 +131,8 @@ public class dashController {
                             "-fx-background-color:  #E6DED1; " +
                             "-fx-border-color: #7f5539; " +
                             "-fx-border-radius: 5px; " +
-                            "-fx-background-radius: 5px"+
-                            "-fx-cursor: hand"
-
-
+                            "-fx-background-radius: 5px;" +
+                            "-fx-cursor: hand;"
             );
 
             taskLabel.setPrefWidth(500.0);
@@ -148,13 +150,12 @@ public class dashController {
         taskDetailPanel.setVisible(true);
         taskName.setText(task);
 
-        // Check if the task is already marked  important
+        // Check if the task is already marked important
         impCheckbox.setSelected(importantTasksMap.containsKey(task));
-        // Check if the task is already marked  completed
+        // Check if the task is already marked completed
         completedCheckbox.setSelected(completedTasksMap.containsKey(task));
     }
 
-    // Handle the Save buttonfrom task detail panel
     @FXML
     public void handleSave() {
         taskDetailPanel.setVisible(false);
@@ -172,7 +173,6 @@ public class dashController {
 
         // Handle completed task checkbox
         if (completedCheckbox.isSelected()) {
-
             if (!completedTasksMap.containsKey(currentTask)) {
                 addToCompPanel(currentTask);
             }
@@ -181,12 +181,13 @@ public class dashController {
                 removeFromCompPanel(currentTask);
             }
         }
+
+
     }
 
-    // Add the task to the important panel
     @FXML
     public void addToImpPanel(String task) {
-        Label impTaskLabel = new Label(task);
+        impTaskLabel = new Label(task);
 
         impTaskLabel.setStyle(
                 "-fx-font-size: 14px; " +
@@ -196,10 +197,8 @@ public class dashController {
                         "-fx-background-color:  #E6DED1; " +
                         "-fx-border-color: #7f5539; " +
                         "-fx-border-radius: 5px; " +
-                        "-fx-background-radius: 5px"+
-                        "-fx-cursor: hand"
-
-                
+                        "-fx-background-radius: 5px;" +
+                        "-fx-cursor: hand;"
         );
 
         impTaskLabel.setPrefWidth(500.0);
@@ -209,7 +208,6 @@ public class dashController {
         importantTasksMap.put(task, impTaskLabel);  // Add the task to the important tasks map
     }
 
-    // Remove the task from the important panel
     @FXML
     public void removeFromImpPanel(String task) {
         Label impTaskLabel = importantTasksMap.get(task);
@@ -219,11 +217,10 @@ public class dashController {
         }
     }
 
-    // Add the task to the completed panel
     @FXML
     public void addToCompPanel(String task) {
-        Label compTaskLabel = new Label(task);
-        compTaskLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333333; -fx-padding: 5px; -fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-radius: 5px;");
+        compTaskLabel = new Label(task);
+
         compTaskLabel.setStyle(
                 "-fx-font-size: 14px; " +
                         "-fx-font-weight: bold; " +
@@ -231,11 +228,9 @@ public class dashController {
                         "-fx-padding: 5px; " +
                         "-fx-background-color:  #E6DED1; " +
                         "-fx-border-color: #7f5539; " +
-                        "-fx-border-radius: 5px; "+
-                        "-fx-background-radius: 5px"+
-                        "-fx-cursor: hand"
-
-
+                        "-fx-border-radius: 5px; " +
+                        "-fx-background-radius: 5px;" +
+                        "-fx-cursor: hand;"
         );
 
         compTaskLabel.setPrefWidth(500.0);
@@ -246,7 +241,6 @@ public class dashController {
         completedTasksMap.put(task, compTaskLabel);  // Add the task to the completed tasks map
     }
 
-    // Remove the task from the completed panel
     @FXML
     public void removeFromCompPanel(String task) {
         Label compTaskLabel = completedTasksMap.get(task);
@@ -257,29 +251,25 @@ public class dashController {
     }
 
     @FXML
-    public void signOut(){
-
+    public void signOut() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Sign Out");
         alert.setHeaderText(null);
         alert.setContentText("Are you sure you want to sign out?");
 
-
         if (alert.showAndWait().get() == ButtonType.OK) {
-            // User clicked OK
             try {
-
                 stage = (Stage) dashMain.getScene().getWindow();
                 stage.close();
 
-                // Load the sign-up pag
+                // Load the sign-up page
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("signup.fxml"));
                 Parent root = loader.load();
 
                 Stage signUpStage = new Stage();
                 signUpStage.setTitle("Sign Up");
                 signUpStage.setScene(new Scene(root));
-                signUpStage.show(); // Show the new sign-up page
+                signUpStage.show();  // Show the new sign-up page
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -288,11 +278,31 @@ public class dashController {
 
     @FXML
     public void detailPanelClose() {
-
         closebtn.setOnMouseClicked(event -> {
             taskDetailPanel.setVisible(false);
         });
     }
 
+    // Color changing logic
+    @FXML
+    public void detailPanelBg() {
+        Pane[] colorPanel = {color1, color2, color3, color4, color5, color6};
+        String[] colors = {"#b8d8e3", "#e9db0c", "#535878", "#f1b5b5", "#F28482", "#BB7B85"};
 
+        for (int i = 0; i < colorPanel.length; i++) {
+            int index = i;
+            colorPanel[index].setOnMouseClicked(event -> changeBgColor(colors[index]));
+        }
+    }
+
+    private void changeBgColor(String color) {
+        Label[] labels = {taskLabel, impTaskLabel, compTaskLabel};
+        for (Label label : labels) {
+            if (label != null) {
+                label.setStyle(label.getStyle() + "; -fx-background-color: " + color + ";");
+            }
+        }
+        taskDetailPanel.setStyle("-fx-background-color: " + color + ";");
+    }
 }
+
