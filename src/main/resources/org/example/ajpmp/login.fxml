@@ -24,15 +24,18 @@
       <TextField fx:id="usernametf" layoutX="574.0" layoutY="205.0" prefHeight="42.0" prefWidth="333.0" promptText="USERNAME" style="-fx-border-color: linear-gradient(to right, #000046, #1cb5e0); -fx-border-radius: 50; -fx-background-radius: 50;">
          <padding>
             <Insets left="12.0" />
-         </padding></TextField>
-      <TextField layoutX="574.0" layoutY="285.0" prefHeight="42.0" prefWidth="333.0" promptText="PASSWORD" style="-fx-border-color: linear-gradient(to right, #000046, #1cb5e0); -fx-background-radius: 50; -fx-border-radius: 50;">
+         </padding>
+      </TextField>
+      <TextField fx:id="passwordtf" layoutX="574.0" layoutY="285.0" prefHeight="42.0" prefWidth="333.0" promptText="PASSWORD" style="-fx-border-color: linear-gradient(to right, #000046, #1cb5e0); -fx-background-radius: 50; -fx-border-radius: 50;">
          <padding>
             <Insets left="12.0" />
-         </padding></TextField>
-      <Button layoutX="682.0" layoutY="359.0" mnemonicParsing="false" onAction="#switchToDashboard" prefHeight="47.0" prefWidth="112.0" style="-fx-border-radius: 50; -fx-background-radius: 50; -fx-background-color: linear-gradient(to right, #000046, #1cb5e0);" text="LOGIN" textFill="WHITE">
+         </padding>
+      </TextField>
+      <Button layoutX="682.0" layoutY="359.0" mnemonicParsing="false" onAction="#login" prefHeight="47.0" prefWidth="112.0" style="-fx-border-radius: 50; -fx-background-radius: 50; -fx-background-color: linear-gradient(to right, #000046, #1cb5e0);" text="LOGIN" textFill="WHITE">
          <font>
             <Font name="System Bold" size="12.0" />
-         </font></Button>
+         </font>
+      </Button>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="458.0" layoutY="123.0" prefHeight="47.0" prefWidth="545.0" text="LOGIN" textFill="#056e8b">
          <font>
             <Font name="System Bold" size="36.0" />
@@ -41,7 +44,8 @@
       <Label alignment="CENTER" layoutX="554.0" layoutY="423.0" onMouseClicked="#switchSignup" prefHeight="93.0" prefWidth="370.0" text="Dont Have an account? Create one.">
          <font>
             <Font size="13.0" />
-         </font></Label>
+         </font>
+      </Label>
    </children>
    <opaqueInsets>
       <Insets />
