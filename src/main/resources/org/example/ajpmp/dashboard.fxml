@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="dashMain" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ajpmp.dashController">
+<AnchorPane fx:id="dashMain" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ajpmp.dashController">
    <children>
       <Pane layoutX="2.0" prefHeight="701.0" prefWidth="307.0" style="-fx-background-color: #F0F0F0; -fx-border-radius: 10; -fx-background-radius: 10;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
          <padding>
@@ -90,11 +90,12 @@
                         <Font size="24.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="taskip" layoutX="42.0" layoutY="87.0" prefHeight="58.0" prefWidth="554.0" promptText="Add new Tasks" style="-fx-border-color: linear-gradient(to right, #000046, #1cb5e0);">
+                  <TextField fx:id="taskip" layoutX="42.0" layoutY="87.0" prefHeight="58.0" prefWidth="550.0" promptText="Add new Tasks" style="-fx-border-color: linear-gradient(to right, #000046, #1cb5e0);">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </TextField>
+                  <Button fx:id="addTaskButton" layoutX="600.0" layoutY="87.0" mnemonicParsing="false" onAction="#addTask" style="-fx-background-color: #AB8C76;" text="Add Task" textFill="WHITE" />
                   <VBox fx:id="taskContainer" layoutX="65.0" layoutY="179.0" prefHeight="463.0" prefWidth="504.0" />
                </children>
             </Pane>
@@ -107,7 +108,7 @@
                   <VBox fx:id="impTaskContainer" layoutX="64.0" layoutY="123.0" prefHeight="503.0" prefWidth="500.0" />
                </children>
             </Pane>
-            <Pane fx:id="completedPanel" layoutX="-1.0" layoutY="-1.0" onMouseClicked="#detailPanelClose" prefHeight="666.0" prefWidth="631.0">
+            <Pane fx:id="completedPanel" layoutX="-1.0" layoutY="-1.0" onMouseClicked="#closeDetailPanel" prefHeight="666.0" prefWidth="631.0">
                <children>
                   <Label layoutX="48.0" layoutY="48.0" text="Completed Tasks">
                      <font>
@@ -149,7 +150,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </CheckBox>
-                  <ImageView fx:id="closebtn" fitHeight="35.0" fitWidth="35.0" layoutX="488.0" layoutY="14.0" onMouseClicked="#detailPanelClose" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="closebtn" fitHeight="35.0" fitWidth="35.0" layoutX="488.0" layoutY="14.0" onMouseClicked="#closeDetailPanel" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@closebtn.png" />
                      </image>
@@ -157,12 +158,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Pane fx:id="color1" layoutX="81.0" layoutY="345.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #b8d8e3; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color2" layoutX="158.0" layoutY="344.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #e9db0c; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color3" layoutX="239.0" layoutY="346.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #535878; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color4" layoutX="313.0" layoutY="346.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #f1b5b5; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color5" layoutX="385.0" layoutY="345.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #F28482; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color6" layoutX="463.0" layoutY="346.0" onMouseClicked="#detailPanelBg" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #BB7B85; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color1" layoutX="81.0" layoutY="345.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #b8d8e3; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color2" layoutX="158.0" layoutY="344.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #e9db0c; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color3" layoutX="239.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #535878; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color4" layoutX="313.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #f1b5b5; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color5" layoutX="385.0" layoutY="345.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #F28482; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color6" layoutX="463.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #BB7B85; -fx-background-radius: 50; -fx-border-radius: 50;" />
                </children>
             </Pane>
          </children></Pane>
