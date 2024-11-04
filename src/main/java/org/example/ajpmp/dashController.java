@@ -82,6 +82,18 @@ public class dashController {
     private VBox calendarTasksList;
     @FXML
     private Button addCalendarTask;
+    @FXML
+    private Button deleteCalendarTask;
+    @FXML
+    private Button delete;
+    @FXML
+    private ComboBox<String> hourComboBox;
+    @FXML
+    private ComboBox<String> minuteComboBox;
+    @FXML
+    private ComboBox<String> ampmComboBox;
+    @FXML
+    private DatePicker datePick;
 
     private LocalDate currentDate = LocalDate.now();
     private YearMonth currentYearMonth;
@@ -139,7 +151,6 @@ public class dashController {
                 initializeUI();
                 loadUserTasks();
                 initializeColorPanels();
-                calendarLabel.setOnMouseClicked(event -> displayCalendarPanel());
                 initializeCalendar();
 
             } catch (Exception e) {
@@ -189,6 +200,9 @@ public class dashController {
         importantPanel.setVisible(false);
         completedPanel.setVisible(false);
         taskDetailPanel.setVisible(false);
+        calendarPanel.setVisible(false);
+        calendarLabel.setOnMouseClicked(event -> displayCalendarPanel());
+        
     }
 
     @FXML
@@ -198,180 +212,183 @@ public class dashController {
 
     // Task methods
 
-    private void loadUserTasks() {
-        String sql = "SELECT id, task_name, is_important, is_completed, description FROM tasks WHERE user_id = ?";
-
-        try (Connection conn = DatabaseUtil.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, currentUserId);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                int taskId = rs.getInt("id");
-                String taskName = rs.getString("task_name");
-                boolean isImportant = rs.getBoolean("is_important");
-                boolean isCompleted = rs.getBoolean("is_completed");
-                String description = rs.getString("description");
-
-                createTaskUI(taskId, taskName, isImportant, isCompleted, description);
-            }
-        } catch (SQLException e) {
-            handleError("Database Error", "Failed to load tasks: " + e.getMessage());
-        }
-    }
-
-    private void createTaskUI(int taskId, String taskName, boolean isImportant, boolean isCompleted,
-            String description) {
-        Label mainLabel = createTaskLabel(taskName);
-        TaskData taskData = new TaskData(taskId, mainLabel);
-        taskData.description = description;
-        taskMap.put(taskName, taskData);
-
-        if (isImportant) {
-            addToImportantPanel(taskName);
-        }
-        if (isCompleted) {
-            addToCompletedPanel(taskName);
-        }
-
-        taskContainer.getChildren().add(mainLabel);
-    }
-
-    // Task detail methods
-
-    private Label createTaskLabel(String text) {
-        Label label = new Label(text);
-        label.setStyle(DEFAULT_STYLE);
-        label.setPrefWidth(500.0);
-        label.setPrefHeight(50.0);
-        label.setOnMouseClicked(event -> openTaskDetail(text));
-        return label;
-    }
-
-    @FXML
-    private void addTask() {
-        String taskText = taskip.getText().trim();
-        if (taskText.isEmpty()) {
-            return;
-        }
-
-        String sql = "INSERT INTO tasks (user_id, task_name, is_important, is_completed, description) VALUES (?, ?, false, false, '')";
-
-        try (Connection conn = DatabaseUtil.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            pstmt.setInt(1, currentUserId);
-            pstmt.setString(2, taskText);
-
-            int affectedRows = pstmt.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        int taskId = generatedKeys.getInt(1);
-                        createTaskUI(taskId, taskText, false, false, "");
-                        taskip.clear();
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            handleError("Database Error", "Failed to save task: " + e.getMessage());
-        }
-    }
-
-    private void openTaskDetail(String taskName) {
-        currentTask = taskName;
-        TaskData taskData = taskMap.get(taskName);
-
-        if (taskData != null) {
-            this.taskName.setText(taskName);
-            if (taskDescription != null) {
-                taskDescription.setText(taskData.description);
-            }
-            impCheckbox.setSelected(taskData.isImportant);
-            completedCheckbox.setSelected(taskData.isCompleted);
-            taskDetailPanel.setVisible(true);
-
-            taskDetailPanel.setStyle("-fx-background-color: " + taskData.currentColor + ";");
-        }
-    }
-
-    @FXML
-    private void handleSave() {
-        TaskData taskData = taskMap.get(currentTask);
-        if (taskData == null)
-            return;
-
-        boolean newImportantState = impCheckbox.isSelected();
-        boolean newCompletedState = completedCheckbox.isSelected();
-        String newDescription = taskDescription != null ? taskDescription.getText() : "";
-
-        String sql = "UPDATE tasks SET is_important = ?, is_completed = ?, description = ?, due_date = ? WHERE id = ? AND user_id = ?";
-
-        try (Connection conn = DatabaseUtil.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setBoolean(1, newImportantState);
-            pstmt.setBoolean(2, newCompletedState);
-            pstmt.setString(3, newDescription);
-            pstmt.setDate(4, java.sql.Date.valueOf(selectedDate));
-            pstmt.setInt(5, taskData.taskId);
-            pstmt.setInt(6, currentUserId);
-
-            if (pstmt.executeUpdate() > 0) {
-                taskData.description = newDescription;
-                updateTaskStatus(currentTask, newImportantState, newCompletedState);
-                updateTasksForDate(selectedDate);
-            }
-        } catch (SQLException e) {
-            handleError("Database Error", "Failed to update task: " + e.getMessage());
-        }
-
-        taskDetailPanel.setVisible(false);
-    }
-
-    @FXML
-    private void handleDelete() {
-        if (currentTask == null)
-            return;
-
-        Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDelete.setTitle("Delete Task");
-        confirmDelete.setHeaderText(null);
-        confirmDelete.setContentText("Are you sure you want to delete this task?");
-
-        Optional<ButtonType> result = confirmDelete.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            String sql = "DELETE FROM tasks WHERE id = ? AND user_id = ?";
+        private void loadUserTasks() {
+            String sql = "SELECT id, task_name, is_important, is_completed, description FROM tasks WHERE user_id = ?";
 
             try (Connection conn = DatabaseUtil.getConnection();
                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                TaskData taskData = taskMap.get(currentTask);
-                if (taskData == null)
-                    return;
+                pstmt.setInt(1, currentUserId);
+                ResultSet rs = pstmt.executeQuery();
 
-                pstmt.setInt(1, taskData.taskId);
-                pstmt.setInt(2, currentUserId);
+                while (rs.next()) {
+                    int taskId = rs.getInt("id");
+                    String taskName = rs.getString("task_name");
+                    boolean isImportant = rs.getBoolean("is_important");
+                    boolean isCompleted = rs.getBoolean("is_completed");
+                    String description = rs.getString("description");
 
-                if (pstmt.executeUpdate() > 0) {
-                    taskContainer.getChildren().remove(taskData.mainLabel);
-                    if (taskData.importantLabel != null) {
-                        impTaskContainer.getChildren().remove(taskData.importantLabel);
-                    }
-                    if (taskData.completedLabel != null) {
-                        completedTaskContainer.getChildren().remove(taskData.completedLabel);
-                    }
-
-                    taskMap.remove(currentTask);
-                    closeDetailPanel();
+                    createTaskUI(taskId, taskName, isImportant, isCompleted, description, null);
                 }
             } catch (SQLException e) {
-                handleError("Database Error", "Failed to delete task: " + e.getMessage());
+                handleError("Database Error", "Failed to load tasks: " + e.getMessage());
             }
         }
-    }
+
+        private void createTaskUI(int taskId, String taskName, boolean isImportant, boolean isCompleted, String description, LocalDate dueDate) {
+            Label mainLabel = createTaskLabel(taskName);
+            TaskData taskData = new TaskData(taskId, mainLabel);
+            taskData.description = description;
+            taskMap.put(taskName, taskData);
+
+            if (isImportant) {
+                addToImportantPanel(taskName);
+            }
+            if (isCompleted) {
+                addToCompletedPanel(taskName);
+            }
+
+            taskContainer.getChildren().add(mainLabel);
+        }
+
+        // Task detail methods
+
+        private Label createTaskLabel(String text) {
+            Label label = new Label(text);
+            label.setStyle(DEFAULT_STYLE);
+            label.setPrefWidth(500.0);
+            label.setPrefHeight(50.0);
+            label.setOnMouseClicked(event -> openTaskDetail(text));
+            return label;
+        }
+
+        @FXML
+        private void addTask() {
+            String taskText = taskip.getText().trim();
+            if (taskText.isEmpty()) {
+                return;
+            }
+
+            String sql = "INSERT INTO tasks (user_id, task_name, is_important, is_completed, description, due_date, due_time) VALUES (?, ?, false, false, '',?,?)";
+
+            try (Connection conn = DatabaseUtil.getConnection();
+                    PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+                pstmt.setInt(1, currentUserId);
+                pstmt.setString(2, taskText);
+                pstmt.setDate(3, java.sql.Date.valueOf(selectedDate)); // Convert LocalDate to SQL Date
+
+                int affectedRows = pstmt.executeUpdate();
+
+                if (affectedRows > 0) {
+                    try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int taskId = generatedKeys.getInt(1);
+                            createTaskUI(taskId, taskText, false, false, "", selectedDate);
+                            taskip.clear();
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                handleError("Database Error", "Failed to save task: " + e.getMessage());
+            }
+        }
+
+        private void openTaskDetail(String taskName) {
+            currentTask = taskName;
+            TaskData taskData = taskMap.get(taskName);
+
+            if (taskData != null) {
+                this.taskName.setText(taskName);
+                if (taskDescription != null) {
+                    taskDescription.setText(taskData.description);
+                }
+                impCheckbox.setSelected(taskData.isImportant);
+                completedCheckbox.setSelected(taskData.isCompleted);
+                taskDetailPanel.setVisible(true);
+
+                taskDetailPanel.setStyle("-fx-background-color: " + taskData.currentColor + ";");
+            }
+        }
+
+        @FXML
+        private void handleSave() {
+            TaskData taskData = taskMap.get(currentTask);
+            if (taskData == null)
+                return;
+
+            boolean newImportantState = impCheckbox.isSelected();
+            boolean newCompletedState = completedCheckbox.isSelected();
+            String newDescription = taskDescription != null ? taskDescription.getText() : "";
+            LocalDate selectedDueDate = datePick.getValue(); // Get new due date
+            String newDueTime = hourComboBox.getValue() + ":" + minuteComboBox.getValue() + " " + ampmComboBox.getValue(); // Get new due time
+
+            String sql = "UPDATE tasks SET is_important = ?, is_completed = ?, description = ?, due_date = ? WHERE id = ? AND user_id = ?";
+
+            try (Connection conn = DatabaseUtil.getConnection();
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                        pstmt.setBoolean(1, newImportantState);
+                        pstmt.setBoolean(2, newCompletedState);
+                        pstmt.setString(3, newDescription);
+                        pstmt.setDate(4, java.sql.Date.valueOf(selectedDueDate)); // Update due date
+                        pstmt.setString(5, newDueTime); // Update due time
+                        pstmt.setInt(6, taskData.taskId);
+                        pstmt.setInt(7, currentUserId);
+
+                if (pstmt.executeUpdate() > 0) {
+                    taskData.description = newDescription;
+                    updateTaskStatus(currentTask, newImportantState, newCompletedState);
+                    updateTasksForDate(selectedDate);
+                }
+            } catch (SQLException e) {
+                handleError("Database Error", "Failed to update task: " + e.getMessage());
+            }
+
+            taskDetailPanel.setVisible(false);
+        }
+
+        @FXML
+        private void handleDelete() {
+            if (currentTask == null)
+                return;
+
+            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDelete.setTitle("Delete Task");
+            confirmDelete.setHeaderText(null);
+            confirmDelete.setContentText("Are you sure you want to delete this task?");
+
+            Optional<ButtonType> result = confirmDelete.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                String sql = "DELETE FROM tasks WHERE id = ? AND user_id = ?";
+
+                try (Connection conn = DatabaseUtil.getConnection();
+                        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                    TaskData taskData = taskMap.get(currentTask);
+                    if (taskData == null)
+                        return;
+
+                    pstmt.setInt(1, taskData.taskId);
+                    pstmt.setInt(2, currentUserId);
+
+                    if (pstmt.executeUpdate() > 0) {
+                        taskContainer.getChildren().remove(taskData.mainLabel);
+                        if (taskData.importantLabel != null) {
+                            impTaskContainer.getChildren().remove(taskData.importantLabel);
+                        }
+                        if (taskData.completedLabel != null) {
+                            completedTaskContainer.getChildren().remove(taskData.completedLabel);
+                        }
+
+                        taskMap.remove(currentTask);
+                        closeDetailPanel();
+                    }
+                } catch (SQLException e) {
+                    handleError("Database Error", "Failed to delete task: " + e.getMessage());
+                }
+            }
+        }
 
     private void updateTaskStatus(String taskName, boolean isImportant, boolean isCompleted) {
         TaskData taskData = taskMap.get(taskName);
@@ -722,7 +739,7 @@ public class dashController {
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int taskId = generatedKeys.getInt(1);
-                        createTaskUI(taskId, taskText, false, false, "");
+                        createTaskUI(taskId, taskText, false, false, "",null);
                         calendarTaskInput.clear();
                     }
                 }
@@ -828,5 +845,4 @@ public class dashController {
             }
         }
     }
-
 }

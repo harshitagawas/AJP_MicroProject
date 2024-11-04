@@ -20,6 +20,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
 
 <AnchorPane fx:id="dashMain" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ajpmp.dashController">
    <children>
@@ -106,7 +108,7 @@
 
             <Pane fx:id="calendarPanel" layoutX="-1.0" layoutY="-5.0" prefHeight="670.0" prefWidth="631.0">
           <children>
-                    <VBox spacing="20" layoutX="48.0" layoutY="48.0">
+                    <VBox spacing="0" layoutX="48.0" layoutY="48.0">
                         <!-- Header with month/year and navigation -->
                         <HBox spacing="15" alignment="CENTER">
                             <Button fx:id="prevMonth" text="←" onAction="#handlePrevMonth" 
@@ -192,7 +194,7 @@
                             </rowConstraints>
                         </GridPane>
 
-                        <VBox spacing="10" style="-fx-padding: 20 0 0 0;">
+                        <VBox spacing="5" style="-fx-padding: 2 0 0 0;">
                             <Label text="Tasks for Selected Date" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
                             <!-- Add Task Section -->
@@ -203,7 +205,7 @@
                                         <Insets right="10.0"/>
                                     </HBox.margin>
                                 </TextField>
-                                <Button fx:id="addCalendarTask" text="Add Task" 
+                                <Button fx:id="addCalendarTask" text="Add Task" onAction="#addCalendarTask" 
                                         style="-fx-background-color: #f0f0f0;
                                                -fx-background-radius: 5;
                                                -fx-border-radius: 5;
@@ -219,7 +221,7 @@
                                     <padding>
                                         <Insets top="5" right="5" bottom="5" left="5"/>
                                     </padding>
-                                </VBox>
+                                </VBox>   
                             </ScrollPane>
                         </VBox>
                     </VBox>
@@ -244,7 +246,8 @@
                   <VBox fx:id="completedTaskContainer" layoutX="64.0" layoutY="123.0" prefHeight="503.0" prefWidth="500.0" />
                </children>
             </Pane>
-            <Pane fx:id="taskDetailPanel" layoutX="38.0" layoutY="100.0" prefHeight="465.0" prefWidth="552.0" style="-fx-background-color: #E6DED1; -fx-border-color: 25; -fx-background-radius: 25;">
+
+            <Pane fx:id="taskDetailPanel" layoutX="38.0" layoutY="100.0" prefHeight="520.0" prefWidth="552.0" style="-fx-background-color: #E6DED1; -fx-border-color: #a3966a; -fx-background-radius: 40; -fx-border-radius: 40;">
                <children>
                   <Label layoutX="25.0" layoutY="18.0" text="TASK:" textFill="#a3966a">
                      <font>
@@ -262,12 +265,13 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </CheckBox>
-                  <Button layoutX="104.0" layoutY="401.0" mnemonicParsing="false" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Delete Task" textFill="WHITE">
+
+                  <Button fx:id = "delete" layoutX="104.0" layoutY="450.0" mnemonicParsing="false" onAction = "#handleDelete" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Delete Task" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="savebtn" layoutX="364.0" layoutY="401.0" mnemonicParsing="false" onAction="#handleSave" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Save Task" textFill="WHITE">
+                  <Button fx:id="savebtn" layoutX="364.0" layoutY="450.0" mnemonicParsing="false" onAction="#handleSave" style="-fx-background-radius: 50; -fx-padding: 12; -fx-background-color: #AB8C76;" text="Save Task" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -285,12 +289,12 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Pane fx:id="color1" layoutX="81.0" layoutY="345.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #b8d8e3; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color2" layoutX="158.0" layoutY="344.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #e9db0c; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color3" layoutX="239.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #535878; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color4" layoutX="313.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #f1b5b5; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color5" layoutX="385.0" layoutY="345.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #F28482; -fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <Pane fx:id="color6" layoutX="463.0" layoutY="346.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #BB7B85; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color1" layoutX="81.0" layoutY="395.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #b8d8e3; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color2" layoutX="158.0" layoutY="394.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #e9db0c; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color3" layoutX="239.0" layoutY="396.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #535878; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color4" layoutX="313.0" layoutY="396.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #f1b5b5; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color5" layoutX="385.0" layoutY="395.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #F28482; -fx-background-radius: 50; -fx-border-radius: 50;" />
+                  <Pane fx:id="color6" layoutX="463.0" layoutY="396.0" onMouseClicked="#handleColorClick" prefHeight="44.0" prefWidth="43.0" style="-fx-background-color: #BB7B85; -fx-background-radius: 50; -fx-border-radius: 50;" />
                </children>
             </Pane>
          </children></Pane>
