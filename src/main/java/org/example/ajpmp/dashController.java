@@ -3,6 +3,7 @@ package org.example.ajpmp;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -11,11 +12,21 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Optional;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.StackPane;
+import java.time.format.DateTimeFormatter;
+import java.time.DayOfWeek;
 
 public class dashController {
     @FXML private Button signout;
@@ -31,6 +42,19 @@ public class dashController {
     @FXML private Label taskLabel, impTaskLabel, compTaskLabel;
     @FXML private Pane color1, color2, color3, color4, color5, color6;
     @FXML private Button deleteButton;
+    @FXML private Pane calendarPanel;
+    @FXML private GridPane calendarGrid;
+    @FXML private Label monthYearLabel;
+    @FXML private Label calendarLabel;
+    @FXML private GridPane weekDaysHeader;
+    @FXML private Button prevMonth;
+    @FXML private Button nextMonth;
+    @FXML private Button todayButton;
+
+    private LocalDate currentDate = LocalDate.now();
+    private YearMonth currentYearMonth;
+    private DateTimeFormatter monthYearFormat = DateTimeFormatter.ofPattern("MMMM yyyy");  
+    private Calendar calendar = Calendar.getInstance();
 
     private Stage stage;
     private int currentUserId;
@@ -73,11 +97,15 @@ public class dashController {
                 initializeUI();
                 loadUserTasks();
                 initializeColorPanels();
+                calendarLabel.setOnMouseClicked(event -> displayCalendarPanel());
+
             } catch (Exception e) {
                 handleError("Initialization Error", "Failed to initialize dashboard: " + e.getMessage());
             }
         });
     }
+
+    // Database methods
 
     private void initializeDatabase() {
         String sql = "ALTER TABLE tasks ADD COLUMN IF NOT EXISTS description TEXT";
@@ -89,6 +117,8 @@ public class dashController {
         }
     }
 
+    // User methods
+
     private void initializeUser() {
         currentUserId = Session.getUserId();
         if (currentUserId == 0) {
@@ -97,6 +127,8 @@ public class dashController {
         }
     }
 
+    // UI methods
+    
     private void initializeUI() {
         taskip.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
@@ -120,6 +152,8 @@ public class dashController {
     public void displayName(String username) {
         nameLabel.setText(username);
     }
+
+    // Task methods
 
     private void loadUserTasks() {
         String sql = "SELECT id, task_name, is_important, is_completed, description FROM tasks WHERE user_id = ?";
@@ -159,6 +193,8 @@ public class dashController {
 
         taskContainer.getChildren().add(mainLabel);
     }
+
+    // Task detail methods
 
     private Label createTaskLabel(String text) {
         Label label = new Label(text);
@@ -347,6 +383,8 @@ public class dashController {
         }
     }
 
+    // Color panel methods
+
     private void initializeColorPanels() {
         color1.setOnMouseClicked(this::handleColorClick);
         color2.setOnMouseClicked(this::handleColorClick);
@@ -426,11 +464,14 @@ public class dashController {
         });
     }
 
+    // Task panel methods
+
     @FXML
     public void displayTaskPanel() {
         tasksPanel.setVisible(true);
         importantPanel.setVisible(false);
         completedPanel.setVisible(false);
+        calendarPanel.setVisible(false);
     }
 
     @FXML
@@ -438,6 +479,7 @@ public class dashController {
         importantPanel.setVisible(true);
         tasksPanel.setVisible(false);
         completedPanel.setVisible(false);
+        calendarPanel.setVisible(false);
     }
 
     @FXML
@@ -445,10 +487,151 @@ public class dashController {
         importantPanel.setVisible(false);
         tasksPanel.setVisible(false);
         completedPanel.setVisible(true);
+        calendarPanel.setVisible(false);
     }
 
     @FXML
     public void closeDetailPanel() {
         taskDetailPanel.setVisible(false);
+    }
+
+    @FXML
+    private void displayCalendarPanel() {
+    tasksPanel.setVisible(false);
+    importantPanel.setVisible(false);
+    completedPanel.setVisible(false);
+    calendarPanel.setVisible(true);
+    taskDetailPanel.setVisible(false);
+    }
+
+    // Calendar methods
+    
+    @FXML
+    private void initializeCalendar() {
+        currentYearMonth = YearMonth.from(currentDate);
+        setupWeekDaysHeader();
+        updateCalendar();
+    }
+
+        private void setupWeekDaysHeader() {
+        String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        for (int i = 0; i < 7; i++) {
+            Label dayLabel = new Label(weekDays[i]);
+            dayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #AB8C76;");
+            dayLabel.setAlignment(Pos.CENTER);
+            dayLabel.setTextAlignment(TextAlignment.CENTER);
+            dayLabel.setPrefWidth(70);
+            weekDaysHeader.add(dayLabel, i, 0);
+        }
+    }
+
+    @FXML
+    private void handlePrevMonth() {
+        currentYearMonth = currentYearMonth.minusMonths(1);
+        updateCalendar();
+    }
+
+    @FXML
+    private void handleNextMonth() {
+        currentYearMonth = currentYearMonth.plusMonths(1);
+        updateCalendar();
+    }
+
+    @FXML
+    private void goToToday() {
+        currentYearMonth = YearMonth.from(LocalDate.now());
+        updateCalendar();
+    }
+
+    private void updateCalendar() {
+        calendarGrid.getChildren().clear();
+        
+        monthYearLabel.setText(currentYearMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")));
+
+        // Get the first day of the month
+        LocalDate firstOfMonth = currentYearMonth.atDay(1);
+        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue() % 7;
+        
+        // Get the number of days in the month
+        int daysInMonth = currentYearMonth.lengthOfMonth();
+
+        int row = 0;
+        int column = dayOfWeek;
+
+        for (int day = 1; day <= daysInMonth; day++) {
+            LocalDate date = currentYearMonth.atDay(day);
+            StackPane dayCell = createDayCell(day, date);
+            
+            if (column > 6) {
+                column = 0;
+                row++;
+            }
+            
+            calendarGrid.add(dayCell, column++, row);
+        }
+    }
+
+    private StackPane createDayCell(int day, LocalDate date) {
+        StackPane dayCell = new StackPane();
+        dayCell.setPrefSize(70, 70);
+        
+        VBox content = new VBox();
+        content.setAlignment(Pos.CENTER);
+        
+        Label dayLabel = new Label(String.valueOf(day));
+        dayLabel.setStyle("-fx-font-size: 16px;");
+        
+        content.getChildren().add(dayLabel);
+        
+        // Style for the day cell
+        String baseStyle = "-fx-background-radius: 5; -fx-padding: 5; -fx-cursor: hand;";
+        
+        if (date.equals(LocalDate.now())) {
+            // Today's date style
+            dayCell.setStyle(baseStyle + "-fx-background-color: #AB8C76; -fx-opacity: 0.7;");
+            dayLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;");
+        } else {
+            // Regular day style
+            dayCell.setStyle(baseStyle + "-fx-background-color: #F0F0F0;");
+        }
+        
+        // Hover effect
+        dayCell.setOnMouseEntered(e -> {
+            if (!date.equals(LocalDate.now())) {
+                dayCell.setStyle(baseStyle + "-fx-background-color: #E6DED1;");
+            }
+        });
+        
+        dayCell.setOnMouseExited(e -> {
+            if (!date.equals(LocalDate.now())) {
+                dayCell.setStyle(baseStyle + "-fx-background-color: #F0F0F0;");
+            }
+        });
+        
+        // Click handler
+        dayCell.setOnMouseClicked(e -> {
+            showDateSelectedAlert(date);
+        });
+        
+        dayCell.getChildren().add(content);
+        return dayCell;
+    }
+
+    private void showDateSelectedAlert(LocalDate date) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Date Selected");
+        alert.setHeaderText(null);
+        alert.setContentText("You have selected: " + 
+            date.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")));
+        
+        // Style the alert dialog
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+            "-fx-background-color: #F0F0F0;" +
+            "-fx-border-color: #AB8C76;" +
+            "-fx-border-width: 2px;"
+        );
+        
+        alert.show();
     }
 }
